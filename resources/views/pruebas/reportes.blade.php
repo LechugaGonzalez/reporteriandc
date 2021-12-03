@@ -27,12 +27,14 @@
                 <div class="card-body">
                     <br>
                     <br>
-                    <br>
                     <div class="row">
                         <div class="col">
                             <table class="table table-bordered table-striped table-hover" id="tabla_persona">
                                 <thead>
                                     <tr>
+                                        <th>
+                                            Código
+                                        </th>
                                         <th>
                                             Nombre  Completo
                                         </th>
@@ -44,6 +46,10 @@
                                         </th>
                                         <th>
                                             Fecha Realización
+                                        </th>
+                                        
+                                        <th>
+                                            Cargo
                                         </th>
                                         <th>
                                             Informe
@@ -74,12 +80,15 @@
 
   
 
-        $(document).ready(function() {
-            $('#tabla_persona').DataTable({
-    "language": {
-      "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
-    }
-  });
+    $(document).ready(function() {
+        $('#tabla_persona').DataTable({
+            "order": [[5, 'desc']],
+            "language": {
+            "url": "//cdn.datatables.net/plug-ins/1.10.15/i18n/Spanish.json"
+            }
+         });
+
+
         $('.select2').select2({
             language: {
                     noResults: function() {
@@ -114,22 +123,21 @@
 
             if($("#encuesta").val()==""){
                 $("#btn_excel").prop('disabled', true);
-
+                
             }
             else{
                 $("#btn_excel").prop('disabled', false);
             }
-            
             $.each(data, function( index ) {
                 table.row.add([
+                        data[index]['codigo_usuario'],
                         data[index]['nombre']+" "+data[index]['apellido'],
                         data[index]['rut'],
                         data[index]['tipo_usuario'],
                         moment(data[index]['fecha']).format('DD/MM/YYYY HH:mm'),
-                        "<button type='button' class='btn btn-danger' onclick='cargarResultados("+data[index]['id_resultado']+")'>Descargar PDF</button>"
-
+                        "<select name='cars' id='"+data[index]['rut']+"'><option value='supervisor'>Supervisor</option> <option value='em-a'>Electromecanico A</option><option value='em-b'>Electromecanico B</option><option value='em-c'>Electromecanico C</option><option value='otro'>Otro</option></select>",
+                        "<button type='button' id='boton' class='btn btn-danger' onclick='cargarResultados("+data[index]['id_resultado']+","+data[index]['rut']+")'>Descargar PDF</button>"
                 ]).draw();
-
               });
         },
         error: function(data) {
@@ -137,34 +145,35 @@
         }
     });
     }
-    function cargarResultados(id){
-        
-        let carga = document.getElementById("overlay");
-        $.ajax({
-        url: "registroPdf",
-        type: "post",
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
-        },
-        data: {
-            'id': id,
-        },
-        beforeSend: function() {
-            
-            carga.style.display = 'block';
-            console.log(carga);
-        },
-        success: function(data) {
-            carga.style.display = 'none';
 
-             window.open('reportes/'+data+'.pdf')
-        },
-        error: function(data) {
-            carga.style.display = 'none';
-            console.log(data);
-        }
-    });
-    }
+    function cargarResultados(id,rut_cargo){
+                 let carga = document.getElementById("overlay");
+                    $.ajax({
+                            url: "registroPdf",
+                            type: "post",
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+                            },
+                            data: {
+                                'id': id,
+                                'cargo': $("#"+rut_cargo).val(),
+                            },
+                            beforeSend: function() {
+                                carga.style.display = 'block';
+                                console.log(carga);
+                            },
+                            success: function(data) {
+                                carga.style.display = 'none';
+                                window.open('reportes/'+data+'.pdf');
+                            // window.location.reload()
+                            },
+                            error: function(data) {
+                                carga.style.display = 'none';
+                                console.log(data);
+                            }
+                        });
+                }
+            
 </script>
 @endsection
 @endsection
