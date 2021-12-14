@@ -56,10 +56,9 @@
                 <h2>{{$data->nombre_r}} {{$data->apellido_r}}</h2>
                 <b>RUT: {{$data->rut_r}}</b> 
                 <br>
-                <b>Cargo: {{isset($cargo->c)}}</b>
+                <b>Cargo: {{$cargo_usuario}}</b>
                 <br>
                 <b>Fecha Prueba: {{date('d/m/Y',strtotime($data->fecha_r))}}</b>
-
                 </td>
             <td align="center">
                 
@@ -145,7 +144,7 @@
             <td align="center"  style="background-color:#F4F5F5">{{round($porc_b)}}%</td>
 
         </tr>
-        @if(isset($categoria_c) || isset($por_c))
+        @if(isset($categoria_c) && isset($por_c))
         <tr>
             <th style="background-color: #d0e1f3">Categoria C</th>
             <td align="center"  style="background-color:#F4F5F5">{{$categoria_c}}</td>
@@ -270,7 +269,9 @@ $cont2=1;
 
 <br>
 
-
+@if($data->id_en == 21)
+<div style="page-break-before:always">&nbsp;</div> 
+@endif
 
 <div class="invoice">
     <table table width="100%" >
